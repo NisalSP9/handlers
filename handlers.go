@@ -236,6 +236,10 @@ func appendQuoted(buf []byte, s string) []byte {
 // ts is the timestamp with which the entry should be logged.
 // status and size are used to provide the response HTTP status and size.
 func buildCommonLogLine(req *http.Request, url url.URL, ts time.Time, status int, size int) []byte {
+	tenantId, err := strconv.Atoi(req.Header.Get("tenantid"))
+	if err != nil {
+		tenantId = 0
+	}
 	username := "-"
 	if url.User != nil {
 		if name := url.User.Username(); name != "" {
@@ -277,6 +281,8 @@ func buildCommonLogLine(req *http.Request, url url.URL, ts time.Time, status int
 	buf = append(buf, strconv.Itoa(status)...)
 	buf = append(buf, " "...)
 	buf = append(buf, strconv.Itoa(size)...)
+	buf = append(buf, " "...)
+	buf = append(buf, strconv.Itoa(tenantId)...)
 	return buf
 }
 
